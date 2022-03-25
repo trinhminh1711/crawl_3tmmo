@@ -8,6 +8,49 @@ module.exports = (app) => {
   const updateUserInfo = require("../controllers/updateUserInfo");
   const userFunc = require("../controllers/userFunction");
   const auth = require("../middleware/auth");
+  const rateLimit = require("express-rate-limit");
+  require("dotenv").config();
+  const sql = require("../model/db");
+  //short link
+  var mysql = require("mysql");
+  const dbConfig = require("../config/db.config");
+
+  async function db() {
+    const connection = mysql.createConnection({
+      host: dbConfig.HOST,
+      user: dbConfig.USER,
+      password: dbConfig.PASSWORD,
+      database: dbConfig.DB,
+    });
+
+    connection.connect(async function (err) {
+      if (err) throw err;
+      await connection.query(
+        "Select * from partners",
+        function (err, result, fields) {
+          renderAPI(result);
+        }
+      );
+    });
+  }
+  db();
+  function renderAPI(arr) {
+    for (let i = 0; i < arr.length; i++) {
+      app.get(
+        "/redirect/" + arr[i].parent_id + "/user:id",
+        rateLimit({
+          windowMs: 60 * 120 * 1000,
+          max: 1,
+          message: "Trùng IP ! Thử lại sau 2h",
+        }),
+        (req, res) => {
+          var replaceWith = "user" + req.params.id;
+          var result = arr[i].link.replace(/user001/g, replaceWith);
+          res.redirect(result);
+        }
+      );
+    }
+  }
   //login
   app.post("/login", login.create);
 
@@ -29,6 +72,10 @@ module.exports = (app) => {
 
   app.get("/partner", auth, partner.getPartners);
 
+  app.post("/update/partner", auth, partner.updatePartner);
+
+  app.post("/add/partner", auth, partner.addPartner);
+
   // notification
   app.post("/add/notifications", auth, notifications.add);
 
@@ -37,6 +84,8 @@ module.exports = (app) => {
   app.get("/getlastest/notifications", auth, notifications.getLastUpdate);
 
   app.delete("/delete/notifications", auth, notifications.delete);
+
+  app.delete("/delete/partner", auth, partner.deletePartner);
 
   app.get("/posterity/:id", auth, posterity.getPosterity);
 

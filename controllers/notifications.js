@@ -10,7 +10,6 @@ exports.add = async (req, res) => {
           message: error,
         });
       else {
-        console.log(results);
         res.send({
           add: true,
           data: results,
@@ -53,7 +52,6 @@ exports.delete = async (req, res) => {
           message: error,
         });
       else {
-        console.log(results);
         res.send({
           delete: true,
           data: results,

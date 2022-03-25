@@ -24,9 +24,15 @@ async function updateOrder(order) {
     ;`,
     function (error, results, fields) {
       if (error) {
-        fs.appendFileSync("../log/error.txt", error + "\n");
+        fs.appendFileSync(
+          "/home/rb005/Desktop/crawl_3tmmo/log/error.txt",
+          error + "\n"
+        );
       } else {
-        fs.appendFileSync("../log/update.txt", " update row recods" + "\n");
+        fs.appendFileSync(
+          "/home/rb005/Desktop/crawl_3tmmo/log/update.txt",
+          " update row recods" + "\n"
+        );
       }
     }
   );
@@ -37,9 +43,15 @@ async function insertOrder(order) {
     `INSERT INTO orders (order_id ,  merchant, utm_source,  is_confirmed, pub_commission , reality_commission ,sales_time,order_status ,confirmed_time ,click_time  ,device) VALUES ("${order.order_id}" ,"${order.merchant}", "${order.utm_source}","${order.is_confirmed}","${order.pub_commission}", "${order.reality_commission}","${order.sales_time}","${order.order_status}","${order.confirmed_time}","${order.click_time}","${order.device}");`,
     function (error, results, fields) {
       if (error) {
-        fs.appendFileSync("../log/error.txt", error + "\n");
+        fs.appendFileSync(
+          "/home/rb005/Desktop/crawl_3tmmo/log/error.txt",
+          error + "\n"
+        );
       } else {
-        fs.appendFileSync("../log/insert.txt", " insert row recods" + "\n");
+        fs.appendFileSync(
+          "/home/rb005/Desktop/crawl_3tmmo/log/insert.txt",
+          " insert row recods" + "\n"
+        );
       }
     }
   );

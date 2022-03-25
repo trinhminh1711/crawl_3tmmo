@@ -10,7 +10,7 @@ async function crawlData(ApiKey) {
       Authorization: "Token " + ApiKey,
     },
     params: {
-      since: "2022-03-24T00:00:00",
+      since: isodate,
     },
   });
   return res.data;
@@ -24,40 +24,34 @@ async function getOrdersOnePage(page, ApiKey) {
       Authorization: "Token " + ApiKey,
     },
     params: {
-      since: "2022-03-24T00:00:00",
+      since: isodate,
       page: page,
     },
   });
   return res.data.data;
 }
-
-async function calculateCommission(order) {
-  await sql.query(
-    `SELECT percentage FROM partners WHERE name = "${order.merchant}"`,
-    async function (error, results, fields) {
-      if (error) {
-        console.log(error);
-      } else {
-        if (results.length != 0) {
-          order.reality_commission =
-            (order.pub_commission * results[0].percentage) / 100;
+async function calculateCommission(name, commission) {
+  return new Promise((resolve) => {
+    sql.query(
+      `SELECT percentage FROM partners WHERE name = "${name}"`,
+      async function (error, results, fields) {
+        if (error) {
+          console.log(error);
         } else {
-          order.reality_commission = 0;
+          //
+          if (results.length > 0) {
+            resolve((commission * results[0].percentage) / 100);
+          } else {
+            resolve((commission * 20) / 100);
+          }
         }
-        await filterDataByTime(order);
       }
-    }
-  );
+    );
+  });
 }
 
 function filterData(arr) {
-  // let currentDate = new Date();
-  // currentDate.setHours(currentDate.getHours() + 7);
-  // currentDate.setMinutes(currentDate.getMinutes() - 30);
-  // let isodate = currentDate.toISOString().split(".")[0];
-  // let dataFilter = [];
   arr.forEach(async (order) => {
-    // if (order.confirmed_time > isodate && order.confirmed_time < isodate2) {
     const value = {};
     value.order_id = order.order_id;
     value.merchant = order.merchant;
@@ -65,16 +59,16 @@ function filterData(arr) {
     value.is_confirmed = order.is_confirmed;
     value.sales_time = order.sales_time;
     value.pub_commission = order.pub_commission;
-    value.reality_commission = 0;
+    value.reality_commission = await calculateCommission(
+      order.merchant,
+      order.pub_commission
+    );
     value.order_status = order.products[0].status;
     value.confirmed_time = order.confirmed_time;
     value.click_time = order.click_time;
     value.device = order.client_platform;
-    await calculateCommission(value);
-    //dataFilter.push(value);
-    // }
+    filterDataByTime(value);
   });
-  //filterDataByTime(dataFilter);
 }
 async function filterDataByTime(dataOrders) {
   await checkExit.check(dataOrders);
