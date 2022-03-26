@@ -5,6 +5,7 @@ async function crawlData(ApiKey) {
   var date = new Date();
   date.setHours(7, 0, 0, 0);
   var isodate = date.toISOString().split(".")[0];
+  console.log(isodate);
   const res = await axios.get("https://api.accesstrade.vn/v1/orders", {
     headers: {
       Authorization: "Token " + ApiKey,
@@ -85,6 +86,7 @@ async function getStart(ApiKey) {
       getAll = getAll.concat(page.concat(page_next));
     }
     filterData(getAll);
+    console.log(getAll.length);
   } else {
     filterData(dataRes.data);
   }

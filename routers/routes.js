@@ -7,6 +7,7 @@ module.exports = (app) => {
   const posterity = require("../controllers/posterity");
   const updateUserInfo = require("../controllers/updateUserInfo");
   const userFunc = require("../controllers/userFunction");
+  const orders = require("../controllers/orders");
   const auth = require("../middleware/auth");
   const rateLimit = require("express-rate-limit");
   require("dotenv").config();
@@ -68,6 +69,15 @@ module.exports = (app) => {
 
   app.post("/customers", auth, customers.create);
 
+  //order
+
+  app.get("/income/user", auth, orders.getIncome);
+
+  app.get("/income/time/user", auth, orders.getIncomeTime);
+  
+  app.get("/rank/user", auth, orders.getRankIncome);
+
+  app.get("/rank/time/user", auth, orders.getRankIncomeTime);
   //partner
 
   app.get("/partner", auth, partner.getPartners);
@@ -87,7 +97,7 @@ module.exports = (app) => {
 
   app.delete("/delete/partner", auth, partner.deletePartner);
 
-  app.get("/posterity/:id", auth, posterity.getPosterity);
+  app.get("/posterity", auth, posterity.getPosterity);
 
   // Retrieve all Customers
   app.get("/customers", auth, customers.findAll);
