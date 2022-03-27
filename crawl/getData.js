@@ -11,7 +11,7 @@ async function crawlData(ApiKey) {
       Authorization: "Token " + ApiKey,
     },
     params: {
-      since: isodate,
+      since: '2022-03-01T00:00:00',
     },
   });
   return res.data;
@@ -25,7 +25,7 @@ async function getOrdersOnePage(page, ApiKey) {
       Authorization: "Token " + ApiKey,
     },
     params: {
-      since: isodate,
+      since: '2022-03-01T00:00:00',
       page: page,
     },
   });

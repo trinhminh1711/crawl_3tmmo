@@ -6,6 +6,7 @@ exports.getPosterity = async (req, res) => {
       if (error) res.send(error);
       else {
         res.send(results);
+        console.log(results);
       }
     }
   );

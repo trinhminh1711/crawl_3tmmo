@@ -71,6 +71,10 @@ module.exports = (app) => {
 
   //order
 
+  app.get("/order/user", auth, orders.getOrder);
+
+  app.get("/order/group", auth, orders.getOrderGroup);
+  
   app.get("/income/user", auth, orders.getIncome);
 
   app.get("/income/time/user", auth, orders.getIncomeTime);

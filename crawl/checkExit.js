@@ -25,12 +25,12 @@ async function updateOrder(order) {
     function (error, results, fields) {
       if (error) {
         fs.appendFileSync(
-          "/home/rb005/Desktop/3tmmo/crawl_3tmmo/error.txt",
+          "/Users/minhdeptrai/Desktop/3tmmo/crawl_3tmmo/error.txt",
           error + "\n"
         );
       } else {
         fs.appendFileSync(
-          "/home/rb005/Desktop/3tmmo/crawl_3tmmo/update.txt",
+          "/Users/minhdeptrai/Desktop/3tmmo/crawl_3tmmo/update.txt",
           " update row recods" + "\n"
         );
       }
@@ -44,12 +44,12 @@ async function insertOrder(order) {
     function (error, results, fields) {
       if (error) {
         fs.appendFileSync(
-          "/home/rb005/Desktop/3tmmo/crawl_3tmmo/log/error.txt",
+          "/Users/minhdeptrai/Desktop/3tmmo/crawl_3tmmo/log/error.txt",
           error + "\n"
         );
       } else {
         fs.appendFileSync(
-          "/home/rb005/Desktop/3tmmo/crawl_3tmmo/log/insert.txt",
+          "/Users/minhdeptrai/Desktop/3tmmo/crawl_3tmmo/log/insert.txt",
           " insert row recods" + "\n"
         );
       }
