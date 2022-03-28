@@ -78,6 +78,8 @@ module.exports = (app) => {
   app.get("/income/user", auth, orders.getIncome);
 
   app.get("/income/time/user", auth, orders.getIncomeTime);
+
+  app.get("/status/order" , auth , orders.getStatusMerchant)
   
   app.get("/rank/user", auth, orders.getRankIncome);
 
