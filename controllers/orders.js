@@ -15,7 +15,7 @@ exports.getOrder = async (req, res) => {
 exports.getOrderGroup = async (req, res) => {
   console.log(req.query);
   await sql.query(
-    `SELECT COUNT(order_id) , merchant , utm_source , SUM(reality_commission)  FROM orders WHERE sales_time > "${req.query.since}" AND sales_time < "${req.query.until}"  AND utm_source = "${req.query.idUser}" GROUP BY merchant;`,
+    `SELECT COUNT(order_id) , merchant , utm_source FROM orders WHERE sales_time > "${req.query.since}" AND sales_time < "${req.query.until}"  AND utm_source = "${req.query.idUser}" GROUP BY merchant;`,
     function (error, results, fields) {
       if (error) {
         console.log(error);
@@ -28,7 +28,7 @@ exports.getOrderGroup = async (req, res) => {
 
 exports.getStatusMerchant = async (req, res) => {
   await sql.query(
-    `SELECT COUNT(order_id) FROM orders
+    `SELECT COUNT(order_id) ,  SUM(reality_commission)  FROM orders
     WHERE sales_time > "${req.query.since}" AND sales_time < "${req.query.until}"  
     AND utm_source = "${req.query.user_id}" AND order_status = "${req.query.status}" AND merchant = "${req.query.merchant}";`,
     function (error, results, fields) {
