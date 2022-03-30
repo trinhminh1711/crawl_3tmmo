@@ -12,8 +12,19 @@ exports.getOrder = async (req, res) => {
     }
   );
 };
-exports.getOrderGroup = async (req, res) => {
+exports.getOrderMechart = async (req, res) => {
   console.log(req.query);
+  await sql.query(
+    `SELECT * FROM orders WHERE utm_source = "${req.query.idUser}" and sales_time > "${req.query.since}" and sales_time < "${req.query.until}" and merchant = "${req.query.merchant}"`,
+    function (error, results, fields) {
+      if (error) res.send(error);
+      else {
+        res.send(results);
+      }
+    }
+  );
+};
+exports.getOrderGroup = async (req, res) => {
   await sql.query(
     `SELECT COUNT(order_id) , merchant , utm_source FROM orders WHERE sales_time > "${req.query.since}" AND sales_time < "${req.query.until}"  AND utm_source = "${req.query.idUser}" GROUP BY merchant;`,
     function (error, results, fields) {
