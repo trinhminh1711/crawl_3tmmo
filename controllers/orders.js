@@ -43,7 +43,7 @@ exports.getStatusMerchant = async (req, res) => {
 
 exports.getIncome = async (req, res) => {
   await sql.query(
-    `SELECT SUM(pub_commission) , SUM(reality_commission) FROM orders WHERE utm_source = "${req.query.idUser}" and sales_time > "${req.query.since}"`,
+    `SELECT SUM(pub_commission) , SUM(reality_commission) FROM orders WHERE utm_source = "${req.query.idUser}" and sales_time > "${req.query.since}" and order_status = "1"`,
     function (error, results, fields) {
       if (error) res.send(error);
       else {
@@ -55,7 +55,7 @@ exports.getIncome = async (req, res) => {
 
 exports.getIncomeTime = async (req, res) => {
   await sql.query(
-    `SELECT SUM(pub_commission) , SUM(reality_commission) FROM orders WHERE utm_source = "${req.query.userId}" and sales_time > "${req.query.since}" and sales_time < "${req.query.until}"`,
+    `SELECT SUM(pub_commission) , SUM(reality_commission) FROM orders WHERE utm_source = "${req.query.userId}" and sales_time > "${req.query.since}" and sales_time < "${req.query.until}" and order_status = "1"`,
     function (error, results, fields) {
       if (error) res.send(error);
       else {
