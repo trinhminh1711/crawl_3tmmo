@@ -45,7 +45,6 @@ exports.deletePartner = async (req, res) => {
             message: error
         });
         else {
-            console.log(results);
             res.send(
                 {
                     delete: true,

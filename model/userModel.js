@@ -56,14 +56,11 @@ Customer.getAll = result => {
       result(null, err);
       return;
     }
-
-    console.log("customers: ", res);
     result(null, res);
   });
 };
 
 Customer.updateById = (id, customer, result) => {
-  console.log(customer);
   sql.query(
     `UPDATE users SET  name = ?, birthday = ?  , sex = ? , bank_account_name = ? , bank_account_number = ? , bank_name = ?  WHERE user_id = ?`,
     [customer.name, customer.birthday, customer.sex, customer.bank_account_name, customer.bank_account_number, customer.bank_name, id],
@@ -79,8 +76,6 @@ Customer.updateById = (id, customer, result) => {
         result({ kind: "not_found" }, null);
         return;
       }
-
-      console.log("updated customer: ", { id: id, ...customer });
       result(null, { id: id, ...customer });
     }
   );
@@ -99,8 +94,6 @@ Customer.remove = (id, result) => {
       result({ kind: "not_found" }, null);
       return;
     }
-
-    console.log("deleted customer with id: ", id);
     result(null, res);
   });
 };
@@ -113,7 +106,6 @@ Customer.removeAll = result => {
       return;
     }
 
-    console.log(`deleted ${res.affectedRows} customers`);
     result(null, res);
   });
 };

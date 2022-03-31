@@ -10,7 +10,6 @@ exports.update = async (req, res) => {
             }
         );
         else {
-            console.log(results);
             res.send(
                 {
                     update: true,

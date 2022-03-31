@@ -1,6 +1,5 @@
 const sql = require("../model/db");
 exports.add = async (req, res) => {
-  console.log(req);
   await sql.query(
     `INSERT INTO notifications ( content, extra_date) VALUES ("'${req.body.data.content}'", "'${req.body.data.extra_date}'");`,
     function (error, results, fields) {

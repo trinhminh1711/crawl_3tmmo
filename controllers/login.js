@@ -7,13 +7,9 @@ require("dotenv").config();
 exports.create = async (req, res) => {
   const passwodHash = md5(req.body.password);
   const userName = req.body.username;
-  const data = req.body.username;
-  const accessToken = jwt.sign({ data }, process.env.ACCESS_TOKEN_SECRET, {
-    expiresIn: "1h",
-  });
   {
     await sql.query(
-      `SELECT user_id FROM users WHERE username= BINARY "${userName}" AND password= "${passwodHash}" `,
+      `SELECT user_id , username , role FROM users WHERE username= BINARY "${userName}" AND password= "${passwodHash}" `,
       function (error, results, fields) {
         if (error) res.send(error);
         else {
@@ -23,9 +19,18 @@ exports.create = async (req, res) => {
               message: "Tên đăng nhập hoặc mật khẩu không đúng",
             });
           } else {
+            const payloadData = {
+              username: results[0].username,
+              user_id: results[0].user_id,
+              role: results[0].role,
+            };
+            const accessToken = jwt.sign(
+              payloadData,
+              process.env.ACCESS_TOKEN_SECRET
+            );
             return res.send({
               login: true,
-              idUser: results,
+              idUser: results[0].user_id,
               token: accessToken,
             });
           }
