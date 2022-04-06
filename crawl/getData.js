@@ -10,7 +10,8 @@ async function crawlData(ApiKey) {
       Authorization: "Token " + ApiKey,
     },
     params: {
-      since: '2022-03-01T00:00:00',
+      since: "2021-11-01T00:00:00",
+      until: "2021-12-01T00:00:00",
     },
   });
   return res.data;
@@ -24,7 +25,8 @@ async function getOrdersOnePage(page, ApiKey) {
       Authorization: "Token " + ApiKey,
     },
     params: {
-      since: '2022-03-01T00:00:00',
+      since: "2021-11-01T00:00:00",
+      until: "2021-12-01T00:00:00",
       page: page,
     },
   });
@@ -59,7 +61,7 @@ function filterData(arr) {
     value.is_confirmed = order.is_confirmed;
     value.sales_time = order.sales_time;
     value.pub_commission = order.pub_commission;
-    value.reality_commission = await calculateCommission(
+    value.reality_commission = await updateCommisstion(
       order.merchant,
       order.pub_commission
     );
@@ -70,6 +72,47 @@ function filterData(arr) {
     filterDataByTime(value);
   });
 }
+async function updateCommisstion(merchantName, pub_commission) {
+  switch (merchantName) {
+    case "atm_online":
+      return 20000;
+    case "tamo":
+      return 135000;
+    case "vayquade":
+      return 40000;
+    case "vaytienloi":
+      return 40000;
+    case "senmovn_cpl":
+      return 4000;
+    case "tien_oi":
+      return 180000;
+    case "findo_cps":
+      return 55000;
+    case "robocash":
+      return 12500;
+    case "senmovn":
+      return 60000;
+    case "doctordong":
+      return 35000;
+    case "moneycat_cps_2021":
+      return 110000;
+    case "mbbank_cpa_ios":
+      return 30000;
+    case "oncredit_cpql":
+      return 30000;
+    case "cash24":
+      return 12250;
+    case "cash24_cps":
+      return 60000;
+    case "Avay": {
+      return await calculateCommission(merchantName, pub_commission);
+    }
+    default: {
+      return 999999;
+    }
+  }
+}
+
 async function filterDataByTime(dataOrders) {
   await checkExit.check(dataOrders);
 }
@@ -84,9 +127,13 @@ async function getStart(ApiKey) {
       const page_next = await getOrdersOnePage(j, ApiKey);
       getAll = getAll.concat(page.concat(page_next));
     }
-    filterData(getAll);
+    await filterData(getAll);
+    console.log(getAll.length);
+    console.log("done  " + ApiKey);
   } else {
-    filterData(dataRes.data);
+    await filterData(dataRes.data);
+    console.log(dataRes.data.length);
+    console.log("done  " + ApiKey);
   }
 }
 
