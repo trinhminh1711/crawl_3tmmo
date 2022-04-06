@@ -2,6 +2,7 @@ module.exports = (app) => {
   const customers = require("../controllers/controller");
   const login = require("../controllers/login");
   const partner = require("../controllers/partners");
+  const account = require("../controllers/account");
   const notifications = require("../controllers/notifications");
   const password = require("../controllers/password");
   const posterity = require("../controllers/posterity");
@@ -52,6 +53,13 @@ module.exports = (app) => {
       );
     }
   }
+
+  //account
+  app.get("/accountkey", auth, account.getAllAccout);
+
+  app.get("/delete/accountkey", auth, account.deleteAccount);
+  
+  app.post("/add/accountkey", auth, account.addAccount);
   //login
   app.post("/login", login.create);
 
