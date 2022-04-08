@@ -10,8 +10,7 @@ async function crawlData(ApiKey) {
       Authorization: "Token " + ApiKey,
     },
     params: {
-      since: "2021-11-01T00:00:00",
-      until: "2021-12-01T00:00:00",
+      since: isodate,
     },
   });
   return res.data;
@@ -25,8 +24,7 @@ async function getOrdersOnePage(page, ApiKey) {
       Authorization: "Token " + ApiKey,
     },
     params: {
-      since: "2021-11-01T00:00:00",
-      until: "2021-12-01T00:00:00",
+      since: isodate,
       page: page,
     },
   });
@@ -35,16 +33,19 @@ async function getOrdersOnePage(page, ApiKey) {
 async function calculateCommission(name, commission) {
   return new Promise((resolve) => {
     sql.query(
-      `SELECT percentage FROM partners WHERE name = "${name}"`,
+      `SELECT percentage , unit_price  FROM partners WHERE name = "${name}"`,
       async function (error, results, fields) {
         if (error) {
           console.log(error);
         } else {
-          //
           if (results.length > 0) {
-            resolve((commission * results[0].percentage) / 100);
+            if(results[0].percentage == 0)
+            {
+              resolve(results[0].unit_price)
+            }
+            else{ resolve((commission * results[0].percentage) / 100)}
           } else {
-            resolve((commission * 20) / 100);
+            resolve((commission * 40) / 100);
           }
         }
       }
@@ -61,7 +62,7 @@ function filterData(arr) {
     value.is_confirmed = order.is_confirmed;
     value.sales_time = order.sales_time;
     value.pub_commission = order.pub_commission;
-    value.reality_commission = await updateCommisstion(
+    value.reality_commission = await calculateCommission(
       order.merchant,
       order.pub_commission
     );
@@ -72,46 +73,20 @@ function filterData(arr) {
     filterDataByTime(value);
   });
 }
-async function updateCommisstion(merchantName, pub_commission) {
-  switch (merchantName) {
-    case "atm_online":
-      return 20000;
-    case "tamo":
-      return 135000;
-    case "vayquade":
-      return 40000;
-    case "vaytienloi":
-      return 40000;
-    case "senmovn_cpl":
-      return 4000;
-    case "tien_oi":
-      return 180000;
-    case "findo_cps":
-      return 55000;
-    case "robocash":
-      return 12500;
-    case "senmovn":
-      return 60000;
-    case "doctordong":
-      return 35000;
-    case "moneycat_cps_2021":
-      return 110000;
-    case "mbbank_cpa_ios":
-      return 30000;
-    case "oncredit_cpql":
-      return 30000;
-    case "cash24":
-      return 12250;
-    case "cash24_cps":
-      return 60000;
-    case "Avay": {
-      return await calculateCommission(merchantName, pub_commission);
-    }
-    default: {
-      return 999999;
-    }
-  }
-}
+
+// async function updateCommisstion(merchantName, pub_commission) {
+//   switch (merchantName) {
+//     case "vnpay": {
+//       return 0;
+//     }
+//     case "oncredit_cpql": {
+//       return 0;
+//     }
+//     default: {
+//       return await calculateCommission(merchantName, pub_commission);
+//     }
+//   }
+// }
 
 async function filterDataByTime(dataOrders) {
   await checkExit.check(dataOrders);

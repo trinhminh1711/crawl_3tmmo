@@ -19,7 +19,7 @@ exports.check = async function checkData(orderData) {
 
 async function updateOrder(order) {
   await sql.query(
-    `UPDATE orders SET merchant = "${order.merchant}", utm_source = "${order.utm_source}",reality_commission = "${order.reality_commission}" ,   is_confirmed = "${order.is_confirmed}" ,sales_time = "${order.sales_time}",order_status = "${order.order_status}",confirmed_time = "${order.confirmed_time}" ,click_time = "${order.click_time}" ,device = "${order.device}"
+    `UPDATE orders SET merchant = "${order.merchant}", utm_source = "${order.utm_source}" ,is_confirmed = "${order.is_confirmed}" ,sales_time = "${order.sales_time}",order_status = "${order.order_status}",confirmed_time = "${order.confirmed_time}" ,click_time = "${order.click_time}" ,device = "${order.device}"
     WHERE order_id = "${order.order_id}";
     ;`,
     function (error, results, fields) {
@@ -31,7 +31,7 @@ async function updateOrder(order) {
       } else {
         fs.appendFileSync(
           "/Users/minhdeptrai/Desktop/3tmmo/crawl_3tmmo/update.txt",
-          " update row recods" + "\n"
+          " update row recods" + order.order_id + "\n"
         );
       }
     }
