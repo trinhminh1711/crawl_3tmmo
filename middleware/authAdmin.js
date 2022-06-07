@@ -4,10 +4,15 @@ function authenToken(req, res, next) {
   if (req.headers["authorization"] == undefined) res.sendStatus(404);
   else {
     const token = req.headers["authorization"].split(" ")[1];
-    if (!token) res.send({authen : "failure"});
+    if (!token) res.send('permission denied');
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, payload) => {
-      if (err != null) { res.send('permission denied') ; return ; } 
-      else { next(); }
+      if (err != null) {
+        res.send('permission denied')
+        return;
+      } else {
+        if(parseJwt(token).role == '0') { next(); }
+        else { res.send('permission denied') }
+      }
     });
   }
 }

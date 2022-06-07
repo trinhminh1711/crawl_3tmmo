@@ -10,6 +10,8 @@ module.exports = (app) => {
   const userFunc = require("../controllers/userFunction");
   const orders = require("../controllers/orders");
   const auth = require("../middleware/auth");
+  const jwt = require("jsonwebtoken");
+  const authAdmin = require("../middleware/authAdmin");
   const rateLimit = require("express-rate-limit");
   require("dotenv").config();
   const sql = require("../model/db");
@@ -27,12 +29,9 @@ module.exports = (app) => {
 
     connection.connect(async function (err) {
       if (err) throw err;
-      await connection.query(
-        "Select * from partners",
-        function (err, result, fields) {
-          renderAPI(result);
-        }
-      );
+      await connection.query("Select * from partners", function (err, result, fields) {
+        renderAPI(result);
+      });
     });
   }
   db();
@@ -53,12 +52,38 @@ module.exports = (app) => {
       );
     }
   }
+  //refeshtoken
+  app.get("/refresh-token", async (req, res) => {
+    const refreshToken = req.query.refreshtoken;
+    const payloadData = req.query.payload;
+    if (!refreshToken) res.send("RefreshToken invalid");
+    else {
+      await sql.query(`SELECT EXISTS(SELECT * FROM refreshtoken WHERE Refresh_Token = "${refreshToken}")`, function (error, results, fields) {
+        console.log(results ,9);
+        if (results == 0) res.send("RefreshToken invalid");
+        else {
+          jwt.verify(payloadData, process.env.REFRESH_TOKEN_SECRET, (err, data) => {
+            if (err) {res.send("RefreshToken invalid");  return;}
+            else {
+              console.log(payloadData);
+              const accessToken = jwt.sign(payloadData, process.env.ACCESS_TOKEN_SECRET, {
+                header: { typ: "JWT", alg: "HS256" },
+                expiresIn: "20s",
+              });
+              console.log(accressToken);
+              res.send({ accressToken: accessToken });
+            }
+          });
+        }
+      });
+    }
+  });
 
   //account
   app.get("/accountkey", auth, account.getAllAccout);
 
   app.get("/delete/accountkey", auth, account.deleteAccount);
-  
+
   app.post("/add/accountkey", auth, account.addAccount);
   //login
   app.post("/login", login.create);
@@ -67,7 +92,7 @@ module.exports = (app) => {
 
   app.get("/userid", auth, userFunc.getId);
 
-  app.get("/listuser", auth, userFunc.getAllUser);
+  app.get("/listuser", authAdmin, userFunc.getAllUser);
 
   app.delete("/delete/user/:userId", auth, userFunc.deleteUser);
 
@@ -84,13 +109,13 @@ module.exports = (app) => {
   app.get("/order/merchant", auth, orders.getOrderMechart);
 
   app.get("/order/group", auth, orders.getOrderGroup);
-  
+
   app.get("/income/user", auth, orders.getIncome);
 
   app.get("/income/time/user", auth, orders.getIncomeTime);
 
-  app.get("/status/order" , auth , orders.getStatusMerchant)
-  
+  app.get("/status/order", auth, orders.getStatusMerchant);
+
   app.get("/rank/user", auth, orders.getRankIncome);
 
   app.get("/rank/time/user", auth, orders.getRankIncomeTime);

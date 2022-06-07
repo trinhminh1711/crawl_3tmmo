@@ -10,8 +10,9 @@ async function crawlData(ApiKey) {
       Authorization: "Token " + ApiKey,
     },
     params: {
-      since: isodate,
-    },
+      since: "2022-03-01T00:00:00",
+      until: "2022-04-01T00:00:00",
+    }
   });
   return res.data;
 }
@@ -24,7 +25,8 @@ async function getOrdersOnePage(page, ApiKey) {
       Authorization: "Token " + ApiKey,
     },
     params: {
-      since: isodate,
+      since: "2022-04-01T00:00:00",
+      until: "2022-05-01T00:00:00",
       page: page,
     },
   });
@@ -39,11 +41,11 @@ async function calculateCommission(name, commission) {
           console.log(error);
         } else {
           if (results.length > 0) {
-            if(results[0].percentage == 0)
-            {
-              resolve(results[0].unit_price)
+            if (results[0].percentage == 0) {
+              resolve(results[0].unit_price);
+            } else {
+              resolve((commission * results[0].percentage) / 100);
             }
-            else{ resolve((commission * results[0].percentage) / 100)}
           } else {
             resolve((commission * 40) / 100);
           }
@@ -73,20 +75,6 @@ function filterData(arr) {
     filterDataByTime(value);
   });
 }
-
-// async function updateCommisstion(merchantName, pub_commission) {
-//   switch (merchantName) {
-//     case "vnpay": {
-//       return 0;
-//     }
-//     case "oncredit_cpql": {
-//       return 0;
-//     }
-//     default: {
-//       return await calculateCommission(merchantName, pub_commission);
-//     }
-//   }
-// }
 
 async function filterDataByTime(dataOrders) {
   await checkExit.check(dataOrders);

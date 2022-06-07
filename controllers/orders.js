@@ -11,9 +11,10 @@ exports.getOrder = async (req, res) => {
     }
   );
 };
+
 exports.getOrderMechart = async (req, res) => {
   await sql.query(
-    `SELECT * FROM orders WHERE utm_source = "${req.query.idUser}" and sales_time >= "${req.query.since}" and sales_time < "${req.query.until}" and merchant = "${req.query.merchant}"`,
+    `SELECT * FROM orders WHERE utm_source = "${req.query.idUser}" and sales_time >= "${req.query.since}" and sales_time < "${req.query.until}" and merchant = "${req.query.merchant}" ORDER BY sales_time DESC;`,
     function (error, results, fields) {
       if (error) res.send(error);
       else {
